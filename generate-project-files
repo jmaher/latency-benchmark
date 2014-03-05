@@ -7,4 +7,6 @@ cd "$( dirname "${BASH_SOURCE[0]}" )"
     --generator-output=build \
     -Gauto_regeneration=0 \
     -f make \
-    -f xcode
+    -f xcode \
+    -DUSE_OCULUS=0 \
+    -DCROSS_COMPILE32=1

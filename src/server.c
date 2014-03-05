@@ -24,8 +24,11 @@
 #include "screenscraper.h"
 #include "latency-benchmark.h"
 #include "../third_party/mongoose/mongoose.h"
-#include "oculus.h"
 #include "clioptions.h"
+
+#ifdef USE_OCULUS
+#include "oculus.h"
+#endif
 
 //MSVC doesn't hvae snprintf defined, for our use, this works- beware they are not identical
 #ifdef WIN32
@@ -35,6 +38,12 @@
 // Serve files from the ./html directory.
 char *document_root = "html";
 struct mg_context *mongoose = NULL;
+
+#ifndef USE_OCULUS
+bool latency_tester_available() {
+  return false;
+}
+#endif
 
 // Runs a latency test and reports the results as JSON written to the given
 // connection.
@@ -199,6 +208,7 @@ static int mongoose_begin_request_callback(struct mg_connection *connection) {
     close_native_reference_window();
     return 1;
   } else if (strcmp(request_info->uri, "/oculusLatencyTester") == 0) {
+#ifdef USE_OCULUS
     const char *result_or_error = "Unknown error";
     if (run_hardware_latency_test(&result_or_error)) {
       debug_log("hardware latency test succeeded");
@@ -215,6 +225,7 @@ static int mongoose_begin_request_callback(struct mg_connection *connection) {
                 "Content-Type: text/plain\r\n\r\n"
                 "%s", result_or_error);
     }
+#endif
     return 1;
   } else {
 #ifdef NDEBUG
@@ -235,7 +246,9 @@ static int mongoose_begin_request_callback(struct mg_connection *connection) {
 void run_server(clioptions *opts) {
   assert(mongoose == NULL);
   srand((unsigned int)time(NULL));
+#ifdef USE_OCULUS
   init_oculus();
+#endif
   const char *options[] = {
     "listening_ports", "5578",
     "document_root", document_root,
