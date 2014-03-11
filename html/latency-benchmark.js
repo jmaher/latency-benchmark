@@ -464,18 +464,18 @@ var tests = [
   { name: 'Scroll latency',
     info: 'Tests the delay from mousewheel movement to on-screen response.',
     test: scrollLatency },
-  { name: 'Native reference',
-    info: 'Tests the input latency of a native app\'s window for comparison to the browser.',
-    test: testNative },
+//  { name: 'Native reference',
+//    info: 'Tests the input latency of a native app\'s window for comparison to the browser.',
+//    test: testNative },
   { name: 'Baseline jank',
     info: 'Tests responsiveness while the browser is idle.',
     test: testJank, blocker: control, report: ['css', 'js', 'scroll'] },
   { name: 'JavaScript jank',
     info: 'Tests responsiveness during JavaScript execution.',
     test: testJank, blocker: cpuLoad, report: ['css', 'scroll'] },
-  { name: 'Image loading jank',
-    info: 'Tests responsiveness during image loading.',
-    test: testJank, blocker: loadGiantImage, report: ['css', 'js', 'scroll'] },
+//  { name: 'Image loading jank',
+//    info: 'Tests responsiveness during image loading.',
+//    test: testJank, blocker: loadGiantImage, report: ['css', 'js', 'scroll'] },
 
   // These tests work, but are disabled for now to focus on the latency test.
   // { name: 'requestAnimationFrame', test: checkName, toCheck: 'requestAnimationFrame' },
@@ -607,7 +607,20 @@ var runNextTest = function(previousTest) {
     info(test, 'test not implemented');
   }
 };
-setTimeout(runNextTest, 100);
+
+function moveAndResize() {
+  try {
+    netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
+    window.moveTo(10,10);
+    window.resizeTo(window.screen.availWidth, window.screen.availHeight);
+  } catch (ex) {
+    alert(ex);
+    dump(ex + "\n");    
+  }
+
+  setTimeout(runNextTest, 100);
+}
+moveAndResize();
 
 var checkTimeout = function(test) {
   if (!test.finished) {
