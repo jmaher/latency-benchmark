@@ -614,7 +614,6 @@ function moveAndResize() {
     window.moveTo(10,10);
     window.resizeTo(window.screen.availWidth, window.screen.availHeight);
   } catch (ex) {
-    alert(ex);
     dump(ex + "\n");    
   }
 
